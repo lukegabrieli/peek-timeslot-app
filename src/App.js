@@ -1,17 +1,25 @@
 import React, {useState} from 'react';
+import {useSelector, useDispatch} from 'react-redux';
+import {addTimeslot} from './redux/timeslot/timeslotSlice';
 
 function App() {
-  const [count, setCount] = useState(0);
+	const [name, setName] = useState('');
+	const timeslots = useSelector((state) => state.timeslot.timeslots);
+	const dispatch = useDispatch();
 
-  return (
-    <div>
-      <h1>Peek Timeslot App</h1>
-      <p>You have clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
-        Click me
-      </button>
-    </div>
-  );
+	return (
+		<div>
+			<p>timeslots:</p>
+			<div>
+				{timeslots.map((timeslot) => {
+					return <p>{timeslot}</p>;
+				})}
+			</div>
+			<label htmlFor='name'>Name:</label>
+			<input type='text' id='name' name='name' onChange={(event) => setName(event.target.value)} />
+			<button onClick={() => dispatch(addTimeslot(name))}>add timeslot</button>
+		</div>
+	);
 }
 
 export default App;
