@@ -6,7 +6,7 @@ function App() {
   return (
     <div>
       <h1>Peek Timeslot App</h1>
-      <p>You clicked {count} times</p>
+      <p>You have clicked {count} times</p>
       <button onClick={() => setCount(count + 1)}>
         Click me
       </button>
