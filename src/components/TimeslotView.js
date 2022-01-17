@@ -8,7 +8,7 @@ function TimeslotView() {
 
 	return (
 		<>
-			<h2>View timeslots:</h2>
+			<h2>Current timeslots:</h2>
 			{timeslots && timeslots.length > 0 ? (
 				<ul>
 					{timeslots.map((timeslot) => {

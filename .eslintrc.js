@@ -3,11 +3,7 @@ module.exports = {
 		browser: true,
 		es2021: true,
 	},
-	extends: [
-		'eslint:recommended',
-		'plugin:react/recommended',
-		'plugin:prettier/recommended',
-	],
+	extends: ['eslint:recommended', 'plugin:react/recommended', 'plugin:prettier/recommended'],
 	parserOptions: {
 		ecmaFeatures: {
 			jsx: true,
@@ -16,5 +12,5 @@ module.exports = {
 		sourceType: 'module',
 	},
 	plugins: ['react'],
-	rules: {},
+	rules: {'react/prop-types': ['off'], 'no-unused-vars': ['off']},
 };

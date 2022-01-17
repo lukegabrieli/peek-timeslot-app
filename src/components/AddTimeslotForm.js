@@ -1,10 +1,14 @@
 import React, {useState} from 'react';
 import {useDispatch} from 'react-redux';
 import moment from 'moment';
+import Modal from './Modal';
 import {addTimeslot} from '../redux/timeslot/timeslotSlice';
 
 function AddTimeslotForm() {
 	const dispatch = useDispatch();
+
+	// modal state
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	// form values
 	const [activityName, setActivityName] = useState('');
@@ -71,95 +75,118 @@ function AddTimeslotForm() {
 		setStartTime('');
 		setEndTime('');
 		setNumMaxGuests(0);
+
+		// close the modal
+		setIsModalOpen(false);
 	};
 
 	return (
 		<>
-			<h2>Add a timeslot:</h2>
-			<form onSubmit={handleSubmit}>
-				<div>
-					<label htmlFor='activity-name'>Activity Name:</label>
-					<input
-						id='activity-name'
-						name='activity-name'
-						type='text'
-						value={activityName}
-						onChange={(e) => {
-							if (activityNameError) {
-								setActivityNameError(false);
-							}
-							setActivityName(e.target.value);
-						}}
-					/>
-					{activityNameError ? <p>Activity name is a required field</p> : null}
-				</div>
-				<div>
-					<label htmlFor='date'>Date:</label>
-					<input
-						id='date'
-						name='date'
-						type='date'
-						min={moment().format('YYYY-MM-DD')}
-						value={date}
-						onChange={(e) => {
-							if (dateError) {
-								setDateError(false);
-							}
-							setDate(e.target.value);
-						}}
-					/>
-					{dateError ? <p>Date is a required field</p> : null}
-				</div>
-				<div>
-					<label htmlFor='start-time'>Start Time:</label>
-					<input
-						id='start-time'
-						name='start-time'
-						type='time'
-						value={startTime}
-						onChange={(e) => {
-							if (startTimeError) {
-								setStartTimeError(false);
-							}
-							setStartTime(e.target.value);
-						}}
-					/>
-					{startTimeError ? <p>Start time is a required field</p> : null}
-				</div>
-				<div>
-					<label htmlFor='end-time'>End Time:</label>
-					<input
-						id='end-time'
-						name='end-time'
-						type='time'
-						value={endTime}
-						onChange={(e) => {
-							if (endTimeError) {
-								setEndTimeError(false);
-							}
-							setEndTime(e.target.value);
-						}}
-					/>
-					{endTimeError ? <p>End time is a required field</p> : null}
-				</div>
-				<div>
-					<label htmlFor='num-max-guests'>Maximum number of guests:</label>
-					<input
-						id='num-max-guests'
-						name='num-max-guests'
-						type='number'
-						value={numMaxGuests}
-						onChange={(e) => {
-							if (numMaxGuestsError) {
-								setNumMaxGuestsError(false);
-							}
-							setNumMaxGuests(e.target.value);
-						}}
-					/>
-					{numMaxGuestsError ? <p>Maximum number of guests must be greater than zero</p> : null}
-				</div>
-				<button>add timeslot</button>
-			</form>
+			<button
+				onClick={() => {
+					setIsModalOpen(true);
+				}}
+			>
+				Add a timeslot
+			</button>
+			<Modal
+				isOpen={isModalOpen}
+				onClose={() => {
+					// reset form fields
+					setActivityName('');
+					setDate('');
+					setStartTime('');
+					setEndTime('');
+					setNumMaxGuests(0);
+					// close modal
+					setIsModalOpen(false);
+				}}
+			>
+				<form onSubmit={handleSubmit}>
+					<div>
+						<label htmlFor='activity-name'>Activity Name:</label>
+						<input
+							id='activity-name'
+							name='activity-name'
+							type='text'
+							value={activityName}
+							onChange={(e) => {
+								if (activityNameError) {
+									setActivityNameError(false);
+								}
+								setActivityName(e.target.value);
+							}}
+						/>
+						{activityNameError ? <p>Activity name is a required field</p> : null}
+					</div>
+					<div>
+						<label htmlFor='date'>Date:</label>
+						<input
+							id='date'
+							name='date'
+							type='date'
+							min={moment().format('YYYY-MM-DD')}
+							value={date}
+							onChange={(e) => {
+								if (dateError) {
+									setDateError(false);
+								}
+								setDate(e.target.value);
+							}}
+						/>
+						{dateError ? <p>Date is a required field</p> : null}
+					</div>
+					<div>
+						<label htmlFor='start-time'>Start Time:</label>
+						<input
+							id='start-time'
+							name='start-time'
+							type='time'
+							value={startTime}
+							onChange={(e) => {
+								if (startTimeError) {
+									setStartTimeError(false);
+								}
+								setStartTime(e.target.value);
+							}}
+						/>
+						{startTimeError ? <p>Start time is a required field</p> : null}
+					</div>
+					<div>
+						<label htmlFor='end-time'>End Time:</label>
+						<input
+							id='end-time'
+							name='end-time'
+							type='time'
+							value={endTime}
+							onChange={(e) => {
+								if (endTimeError) {
+									setEndTimeError(false);
+								}
+								setEndTime(e.target.value);
+							}}
+						/>
+						{endTimeError ? <p>End time is a required field</p> : null}
+					</div>
+					<div>
+						<label htmlFor='num-max-guests'>Maximum number of guests:</label>
+						<input
+							id='num-max-guests'
+							name='num-max-guests'
+							type='number'
+							value={numMaxGuests}
+							onChange={(e) => {
+								if (numMaxGuestsError) {
+									setNumMaxGuestsError(false);
+								}
+								setNumMaxGuests(e.target.value);
+							}}
+						/>
+						{numMaxGuestsError ? <p>Maximum number of guests must be greater than zero</p> : null}
+					</div>
+					<button>add timeslot</button>
+				</form>
+			</Modal>
 		</>
 	);
 }
