@@ -1,17 +1,17 @@
-import { createSlice } from '@reduxjs/toolkit'
+import {createSlice} from '@reduxjs/toolkit';
 
 export const timeslotSlice = createSlice({
-  name: 'timeslot',
-  initialState: {
-    timeslots: [],
-  },
-  reducers: {
-    addTimeslot: (state, action) => {
-      state.timeslots.push(action.payload)
-    },
-  }
-})
+	name: 'timeslot',
+	initialState: {
+		timeslots: [],
+	},
+	reducers: {
+		addTimeslot: (state, action) => {
+			state.timeslots.push(action.payload);
+		},
+	},
+});
 
-export const { addTimeslot } = timeslotSlice.actions
+export const {addTimeslot} = timeslotSlice.actions;
 
-export default timeslotSlice.reducer
+export default timeslotSlice.reducer;
