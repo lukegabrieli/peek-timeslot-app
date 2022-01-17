@@ -1,0 +1,12 @@
+{
+  "files": {
+    "main.js": "/peek-timeslot-app/static/js/main.ce668c15.js",
+    "static/js/787.6b57b5ee.chunk.js": "/peek-timeslot-app/static/js/787.6b57b5ee.chunk.js",
+    "index.html": "/peek-timeslot-app/index.html",
+    "main.ce668c15.js.map": "/peek-timeslot-app/static/js/main.ce668c15.js.map",
+    "787.6b57b5ee.chunk.js.map": "/peek-timeslot-app/static/js/787.6b57b5ee.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.ce668c15.js"
+  ]
+}
