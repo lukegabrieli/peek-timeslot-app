@@ -12,7 +12,7 @@ function App() {
 			<p>timeslots:</p>
 			<div>
 				{timeslots.map((timeslot) => {
-					return <p>{timeslot}</p>;
+					return <p key={timeslot}>{timeslot}</p>;
 				})}
 			</div>
 			<label htmlFor='name'>Name:</label>
