@@ -53,11 +53,13 @@ function AddTimeslotForm() {
 
 		// construct timeslot object to dispatch to redux store
 		const timeslot = {
+			id: Math.floor(Math.random() * 100000), // randomize an id
 			activityName: activityName,
 			date: date,
 			startTime: startTime,
 			endTime: endTime,
 			numMaxGuests: numMaxGuests,
+			isCancelled: false,
 		};
 
 		// dispatch
@@ -68,7 +70,7 @@ function AddTimeslotForm() {
 		setDate('');
 		setStartTime('');
 		setEndTime('');
-		setNumMaxGuests('');
+		setNumMaxGuests(0);
 	};
 
 	return (

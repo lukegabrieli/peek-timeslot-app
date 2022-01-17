@@ -1,7 +1,9 @@
 import React from 'react';
-import {useSelector} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
+import {cancelTimeslot} from '../redux/timeslot/timeslotSlice';
 
 function TimeslotView() {
+	const dispatch = useDispatch();
 	const timeslots = useSelector((state) => state.timeslot.timeslots);
 
 	return (
@@ -9,11 +11,24 @@ function TimeslotView() {
 			<h2>View timeslots:</h2>
 			{timeslots && timeslots.length > 0 ? (
 				<ul>
-					{timeslots.map((timeslot, index) => {
-						const {activityName, date, startTime, endTime, numMaxGuests} = timeslot;
+					{timeslots.map((timeslot) => {
+						const {id, activityName, date, startTime, endTime, numMaxGuests, isCancelled} = timeslot;
 						return (
-							<li key={index}>
-								<p>Activity name: {activityName}</p>
+							<li key={id}>
+								<p>
+									<span>Activity name: {activityName} </span>
+									{!isCancelled ? (
+										<button
+											onClick={() => {
+												dispatch(cancelTimeslot(id));
+											}}
+										>
+											Cancel
+										</button>
+									) : (
+										<span>(CANCELED)</span>
+									)}
+								</p>
 								<ul>
 									<li>Date: {date}</li>
 									<li>Start time: {startTime}</li>
