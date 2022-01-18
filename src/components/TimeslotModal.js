@@ -87,7 +87,7 @@ function TimeslotModal({isOpen = false, onClose, timeslot}) {
 				startTime: startTime,
 				endTime: endTime,
 				numMaxGuests: numMaxGuests,
-				isCancelled: false,
+				isCanceled: false,
 			};
 
 			// dispatch
