@@ -8,7 +8,7 @@ import TimeslotModal from './TimeslotModal';
 
 const StyledContainer = styled.div`
 	position: relative;
-	margin-top: 48px;
+	margin-top: 8px;
 `;
 
 const StyledCalendarHour = styled.div`
@@ -63,7 +63,7 @@ const StyledCanceledText = styled.span`
 const StyledHeaderContainer = styled.div`
 	display: flex;
 	justify-content: center;
-	margin-bottom: 8px;
+	margin-top: 24px;
 `;
 
 const StyledChevronButtons = styled.button`
@@ -78,9 +78,7 @@ const StyledChevronButtons = styled.button`
 `;
 
 function CalendarView() {
-	const dispatch = useDispatch();
 	const timeslots = useSelector((state) => state.timeslot.timeslots);
-	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [currentDay, setCurrentDay] = useState(moment());
 
 	// filter timeslots based on day
@@ -91,26 +89,26 @@ function CalendarView() {
 
 	return (
 		<>
+			<StyledHeaderContainer>
+				<StyledChevronButtons
+					onClick={() => {
+						const prevDay = moment(currentDay).subtract(1, 'days');
+						setCurrentDay(prevDay);
+					}}
+				>
+					‹
+				</StyledChevronButtons>
+				<h2>{currentDay.format('MMMM DD, YYYY')}</h2>
+				<StyledChevronButtons
+					onClick={() => {
+						const nextDay = moment(currentDay).add(1, 'days');
+						setCurrentDay(nextDay);
+					}}
+				>
+					›
+				</StyledChevronButtons>
+			</StyledHeaderContainer>
 			<StyledContainer>
-				<StyledHeaderContainer>
-					<StyledChevronButtons
-						onClick={() => {
-							const prevDay = moment(currentDay).subtract(1, 'days');
-							setCurrentDay(prevDay);
-						}}
-					>
-						‹
-					</StyledChevronButtons>
-					<h2>{currentDay.format('MMMM DD, YYYY')}</h2>
-					<StyledChevronButtons
-						onClick={() => {
-							const nextDay = moment(currentDay).add(1, 'days');
-							setCurrentDay(nextDay);
-						}}
-					>
-						›
-					</StyledChevronButtons>
-				</StyledHeaderContainer>
 				<div>
 					{hoursArray.map((hour) => {
 						const formattedStartTime = moment.utc().startOf('day').add(hour.startMinutes, 'minutes').format('HH:mm');
@@ -123,55 +121,58 @@ function CalendarView() {
 						);
 					})}
 				</div>
-				{filteredTimeslots.map((timeslot) => {
-					const {id, activityName, startTime, endTime, numMaxGuests, isCanceled} = timeslot;
-					const startTimeAsMinutes = moment.duration(startTime).asMinutes();
-					const endTimeAsMinutes = moment.duration(endTime).asMinutes();
-					return (
-						<React.Fragment key={id}>
-							<StyledTimeslot
-								top={startTimeAsMinutes}
-								height={endTimeAsMinutes - startTimeAsMinutes}
-								isCanceled={isCanceled}
-							>
-								<StyledTimeslotTitle>
-									{activityName} ({startTime} - {endTime})
-									{!isCanceled ? (
-										<>
-											<StyledButton
-												onClick={() => {
-													dispatch(cancelTimeslot(id));
-												}}
-											>
-												Cancel
-											</StyledButton>
-											<StyledButton
-												onClick={() => {
-													setIsModalOpen(true);
-												}}
-											>
-												Edit
-											</StyledButton>
-										</>
-									) : (
-										<StyledCanceledText>(Canceled)</StyledCanceledText>
-									)}
-								</StyledTimeslotTitle>
-								<StyledTimeslotDescription>Maximum guests: {numMaxGuests}</StyledTimeslotDescription>
-							</StyledTimeslot>
-							<TimeslotModal
-								isOpen={isModalOpen}
-								onClose={() => {
-									setIsModalOpen(false);
-								}}
-								timeslot={timeslot}
-							/>
-						</React.Fragment>
-					);
-				})}
+				{filteredTimeslots.map((timeslot) => (
+					<Timeslot key={timeslot.id} timeslot={timeslot} />
+				))}
 			</StyledContainer>
 		</>
 	);
 }
 
 export default CalendarView;
+
+function Timeslot({timeslot}) {
+	const dispatch = useDispatch();
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const {id, activityName, startTime, endTime, numMaxGuests, isCanceled} = timeslot;
+	const startTimeAsMinutes = moment.duration(startTime).asMinutes();
+	const endTimeAsMinutes = moment.duration(endTime).asMinutes();
+
+	return (
+		<React.Fragment key={id}>
+			<StyledTimeslot top={startTimeAsMinutes} height={endTimeAsMinutes - startTimeAsMinutes} isCanceled={isCanceled}>
+				<StyledTimeslotTitle>
+					{activityName} ({startTime} - {endTime})
+					{!isCanceled ? (
+						<>
+							<StyledButton
+								onClick={() => {
+									dispatch(cancelTimeslot(id));
+								}}
+							>
+								Cancel
+							</StyledButton>
+							<StyledButton
+								onClick={() => {
+									setIsModalOpen(true);
+								}}
+							>
+								Edit
+							</StyledButton>
+						</>
+					) : (
+						<StyledCanceledText>(Canceled)</StyledCanceledText>
+					)}
+				</StyledTimeslotTitle>
+				<StyledTimeslotDescription>Maximum guests: {numMaxGuests}</StyledTimeslotDescription>
+			</StyledTimeslot>
+			<TimeslotModal
+				isOpen={isModalOpen}
+				onClose={() => {
+					setIsModalOpen(false);
+				}}
+				timeslot={timeslot}
+			/>
+		</React.Fragment>
+	);
+}
