@@ -17,7 +17,7 @@ export const timeslotSlice = createSlice({
 						? timeslot
 						: {
 								...timeslot,
-								isCancelled: true,
+								isCanceled: true,
 						  };
 				}),
 			};
