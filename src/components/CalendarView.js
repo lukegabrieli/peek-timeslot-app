@@ -23,32 +23,45 @@ const StyledCalendarHour = styled.div`
 	padding: 4px;
 `;
 
-const StyledTimeslot = styled.div`
-	background-color: ${({isCanceled}) => (isCanceled ? 'rgba(237, 122, 77, .9)' : 'rgba(163, 205, 217, 0.9)')};
+const StyledTimeslotContainer = styled.div`
 	position: absolute;
+	top: 0;
+	bottom: 0;
 	left: 120px;
 	right: 12px;
+`;
+
+const StyledTimeslot = styled.div`
+	border: 1px solid white;
+	background-color: ${({isCanceled}) => (isCanceled ? 'rgba(237, 122, 77, .9)' : 'rgba(163, 205, 217, 0.9)')};
+	position: absolute;
+	right: 0;
+	left: ${({left}) => `${left}%`};
 	top: ${({top}) => `${top}px`};
 	height: ${({height}) => `${height}px`};
 	padding: 4px;
 	box-sizing: border-box;
 	border-radius: 8px;
+	overflow: hidden;
 `;
 
 const StyledTimeslotTitle = styled.p`
 	margin: 0;
-	padding: 0;
-`;
-
-const StyledTimeslotDescription = styled.p`
-	margin: 0;
+	margin-bottom: 2px;
 	padding: 0;
 	font-size: 14px;
 `;
 
+const StyledTimeslotDescription = styled.p`
+	margin: 0;
+	margin-bottom: 2px;
+	padding: 0;
+	font-size: 12px;
+`;
+
 const StyledButton = styled.button`
 	margin: 0;
-	margin-left: 8px;
+	margin-left: 4px;
 	padding: 0;
 	background: none;
 	border: none;
@@ -57,7 +70,7 @@ const StyledButton = styled.button`
 `;
 
 const StyledCanceledText = styled.span`
-	margin-left: 8px;
+	margin-left: 4px;
 `;
 
 const StyledHeaderContainer = styled.div`
@@ -83,9 +96,34 @@ function CalendarView() {
 
 	// filter timeslots based on day
 	const formattedCurrentDay = currentDay.format('YYYY-MM-DD');
-	const filteredTimeslots = timeslots.filter(({date}) => {
-		return date === formattedCurrentDay;
-	});
+	const filteredTimeslots = timeslots
+		.filter(({date}) => {
+			return date === formattedCurrentDay;
+		})
+		.sort((timeslot1, timeslot2) => timeslot1.startTime.localeCompare(timeslot2.startTime));
+
+	// create indents for overlapping timeslots
+	const indentsMap = {};
+	let currentIndent = 0;
+	for (let x = 0; x < filteredTimeslots.length; x++) {
+		const currentTimeslot = filteredTimeslots[x];
+		const previousTimeslot = filteredTimeslots[x - 1];
+
+		if (previousTimeslot) {
+			const currentTimeslotStartTimeMoment = moment(`${currentTimeslot.date} ${currentTimeslot.startTime}`);
+			const previousTimeslotEndTimeMoment = moment(`${previousTimeslot.date} ${previousTimeslot.endTime}`);
+
+			if (currentTimeslotStartTimeMoment.isBefore(previousTimeslotEndTimeMoment)) {
+				currentIndent = currentIndent + 1;
+			} else {
+				currentIndent = 0;
+			}
+
+			indentsMap[currentTimeslot.id] = currentIndent;
+		} else {
+			indentsMap[currentTimeslot.id] = 0;
+		}
+	}
 
 	return (
 		<>
@@ -121,9 +159,11 @@ function CalendarView() {
 						);
 					})}
 				</div>
-				{filteredTimeslots.map((timeslot) => (
-					<Timeslot key={timeslot.id} timeslot={timeslot} />
-				))}
+				<StyledTimeslotContainer>
+					{filteredTimeslots.map((timeslot) => (
+						<Timeslot key={timeslot.id} timeslot={timeslot} indent={indentsMap[timeslot.id]} />
+					))}
+				</StyledTimeslotContainer>
 			</StyledContainer>
 		</>
 	);
@@ -131,7 +171,7 @@ function CalendarView() {
 
 export default CalendarView;
 
-function Timeslot({timeslot}) {
+function Timeslot({timeslot, indent}) {
 	const dispatch = useDispatch();
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const {id, activityName, startTime, endTime, numMaxGuests, isCanceled} = timeslot;
@@ -140,9 +180,14 @@ function Timeslot({timeslot}) {
 
 	return (
 		<React.Fragment key={id}>
-			<StyledTimeslot top={startTimeAsMinutes} height={endTimeAsMinutes - startTimeAsMinutes} isCanceled={isCanceled}>
+			<StyledTimeslot
+				top={startTimeAsMinutes}
+				left={indent * 20}
+				height={endTimeAsMinutes - startTimeAsMinutes}
+				isCanceled={isCanceled}
+			>
 				<StyledTimeslotTitle>
-					{activityName} ({startTime} - {endTime})
+					{activityName}{' '}
 					{!isCanceled ? (
 						<>
 							<StyledButton
@@ -164,6 +209,9 @@ function Timeslot({timeslot}) {
 						<StyledCanceledText>(Canceled)</StyledCanceledText>
 					)}
 				</StyledTimeslotTitle>
+				<StyledTimeslotDescription>
+					({startTime} - {endTime})
+				</StyledTimeslotDescription>
 				<StyledTimeslotDescription>Maximum guests: {numMaxGuests}</StyledTimeslotDescription>
 			</StyledTimeslot>
 			<TimeslotModal
