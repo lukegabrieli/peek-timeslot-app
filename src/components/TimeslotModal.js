@@ -43,6 +43,7 @@ const StyledErrorMessage = styled.p`
 
 const StyledButton = styled.button`
 	margin: 0;
+	margin-top: 16px;
 	padding: 12px 24px;
 	background-color: #3eb595;
 	border-radius: 12px;
@@ -68,6 +69,8 @@ function TimeslotModal({isOpen = false, onClose, timeslot}) {
 	const [startTimeError, setStartTimeError] = useState(false);
 	const [endTimeError, setEndTimeError] = useState(false);
 	const [numMaxGuestsError, setNumMaxGuestsError] = useState(false);
+	const [startTimeAfterEndTimeError, setStartTimeAfterEndTimeError] = useState(false);
+	const [inThePastError, setInThePastError] = useState(false);
 
 	useEffect(() => {
 		if (timeslot) {
@@ -107,6 +110,22 @@ function TimeslotModal({isOpen = false, onClose, timeslot}) {
 				setNumMaxGuestsError(true);
 			}
 
+			return;
+		}
+
+		// if the start time is after end time, show an error
+		const startTimeAsMinutes = moment.duration(trimmedStartTime).asMinutes();
+		const endTimeAsMinutes = moment.duration(trimmedEndTime).asMinutes();
+		if (startTimeAsMinutes >= endTimeAsMinutes) {
+			setStartTimeAfterEndTimeError(true);
+			return;
+		}
+
+		// if combo of date and start time is in the past, show an error
+		const now = moment();
+		const timeslotStartMoment = moment(`${trimmedDate} ${trimmedStartTime}`);
+		if (timeslotStartMoment.isBefore(now)) {
+			setInThePastError(true);
 			return;
 		}
 
@@ -204,6 +223,9 @@ function TimeslotModal({isOpen = false, onClose, timeslot}) {
 								min={moment().format('YYYY-MM-DD')}
 								value={date}
 								onChange={(e) => {
+									if (inThePastError) {
+										setInThePastError(false);
+									}
 									if (dateError) {
 										setDateError(false);
 									}
@@ -220,6 +242,12 @@ function TimeslotModal({isOpen = false, onClose, timeslot}) {
 								type='time'
 								value={startTime}
 								onChange={(e) => {
+									if (startTimeAfterEndTimeError) {
+										setStartTimeAfterEndTimeError(false);
+									}
+									if (inThePastError) {
+										setInThePastError(false);
+									}
 									if (startTimeError) {
 										setStartTimeError(false);
 									}
@@ -236,6 +264,9 @@ function TimeslotModal({isOpen = false, onClose, timeslot}) {
 								type='time'
 								value={endTime}
 								onChange={(e) => {
+									if (startTimeAfterEndTimeError) {
+										setStartTimeAfterEndTimeError(false);
+									}
 									if (endTimeError) {
 										setEndTimeError(false);
 									}
@@ -262,6 +293,12 @@ function TimeslotModal({isOpen = false, onClose, timeslot}) {
 								<StyledErrorMessage>Maximum number of guests must be greater than zero</StyledErrorMessage>
 							) : null}
 						</StyledInputRow>
+						{startTimeAfterEndTimeError ? (
+							<StyledErrorMessage>The start time cannot be after the end time</StyledErrorMessage>
+						) : null}
+						{inThePastError ? (
+							<StyledErrorMessage>This timeslot is in the past, please choose a future timeslot</StyledErrorMessage>
+						) : null}
 						<StyledButton>Submit</StyledButton>
 					</form>
 				</StyledContent>
