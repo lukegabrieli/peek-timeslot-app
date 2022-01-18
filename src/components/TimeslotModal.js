@@ -1,14 +1,13 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {useDispatch} from 'react-redux';
 import moment from 'moment';
-import Modal from './Modal';
-import {addTimeslot} from '../redux/timeslot/timeslotSlice';
+import ReactModal from 'react-modal';
+import {addTimeslot, editTimeslot} from '../redux/timeslot/timeslotSlice';
 
-function AddTimeslotForm() {
+ReactModal.setAppElement('#root');
+
+function TimeslotModal({isOpen = false, onClose, timeslot}) {
 	const dispatch = useDispatch();
-
-	// modal state
-	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	// form values
 	const [activityName, setActivityName] = useState('');
@@ -23,6 +22,16 @@ function AddTimeslotForm() {
 	const [startTimeError, setStartTimeError] = useState(false);
 	const [endTimeError, setEndTimeError] = useState(false);
 	const [numMaxGuestsError, setNumMaxGuestsError] = useState(false);
+
+	useEffect(() => {
+		if (timeslot) {
+			setActivityName(timeslot.activityName);
+			setDate(timeslot.date);
+			setStartTime(timeslot.startTime);
+			setEndTime(timeslot.endTime);
+			setNumMaxGuests(timeslot.numMaxGuests);
+		}
+	}, [timeslot]);
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
@@ -55,53 +64,58 @@ function AddTimeslotForm() {
 			return;
 		}
 
-		// construct timeslot object to dispatch to redux store
-		const timeslot = {
-			id: Math.floor(Math.random() * 100000), // randomize an id
-			activityName: activityName,
-			date: date,
-			startTime: startTime,
-			endTime: endTime,
-			numMaxGuests: numMaxGuests,
-			isCancelled: false,
-		};
+		// if a timeslot already exists, we're just editing
+		if (timeslot) {
+			const editedTimeslot = {
+				id: timeslot.id,
+				activityName: activityName,
+				date: date,
+				startTime: startTime,
+				endTime: endTime,
+				numMaxGuests: numMaxGuests,
+			};
 
-		// dispatch
-		dispatch(addTimeslot(timeslot));
+			// dispatch
+			dispatch(editTimeslot(editedTimeslot));
+		} else {
+			// or else we're adding a new one!
+			// construct new timeslot object to dispatch to redux store
+			const newTimeslot = {
+				id: Math.floor(Math.random() * 100000), // randomize an id
+				activityName: activityName,
+				date: date,
+				startTime: startTime,
+				endTime: endTime,
+				numMaxGuests: numMaxGuests,
+				isCancelled: false,
+			};
 
-		// reset form fields
-		setActivityName('');
-		setDate('');
-		setStartTime('');
-		setEndTime('');
-		setNumMaxGuests(0);
+			// dispatch
+			dispatch(addTimeslot(newTimeslot));
+
+			// reset form fields
+			setActivityName('');
+			setDate('');
+			setStartTime('');
+			setEndTime('');
+			setNumMaxGuests(0);
+		}
 
 		// close the modal
-		setIsModalOpen(false);
+		onClose();
 	};
 
 	return (
 		<>
-			<button
-				onClick={() => {
-					setIsModalOpen(true);
-				}}
-			>
-				Add a timeslot
-			</button>
-			<Modal
-				isOpen={isModalOpen}
-				onClose={() => {
-					// reset form fields
-					setActivityName('');
-					setDate('');
-					setStartTime('');
-					setEndTime('');
-					setNumMaxGuests(0);
-					// close modal
-					setIsModalOpen(false);
-				}}
-			>
+			<ReactModal isOpen={isOpen} onRequestClose={onClose} contentLabel='Modal'>
+				<button
+					onClick={() => {
+						// call onClose
+						onClose();
+					}}
+				>
+					Close modal
+				</button>
 				<form onSubmit={handleSubmit}>
 					<div>
 						<label htmlFor='activity-name'>Activity Name:</label>
@@ -184,11 +198,11 @@ function AddTimeslotForm() {
 						/>
 						{numMaxGuestsError ? <p>Maximum number of guests must be greater than zero</p> : null}
 					</div>
-					<button>add timeslot</button>
+					<button>{timeslot ? 'Edit timeslot' : 'Add timeslot'}</button>
 				</form>
-			</Modal>
+			</ReactModal>
 		</>
 	);
 }
 
-export default AddTimeslotForm;
+export default TimeslotModal;
