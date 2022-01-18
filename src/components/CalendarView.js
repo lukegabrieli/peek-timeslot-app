@@ -8,7 +8,7 @@ import TimeslotModal from './TimeslotModal';
 
 const StyledContainer = styled.div`
 	position: relative;
-	margin-top: 48px;
+	margin-top: 8px;
 `;
 
 const StyledCalendarHour = styled.div`
@@ -63,7 +63,7 @@ const StyledCanceledText = styled.span`
 const StyledHeaderContainer = styled.div`
 	display: flex;
 	justify-content: center;
-	margin-bottom: 8px;
+	margin-top: 24px;
 `;
 
 const StyledChevronButtons = styled.button`
@@ -91,26 +91,26 @@ function CalendarView() {
 
 	return (
 		<>
+			<StyledHeaderContainer>
+				<StyledChevronButtons
+					onClick={() => {
+						const prevDay = moment(currentDay).subtract(1, 'days');
+						setCurrentDay(prevDay);
+					}}
+				>
+					‹
+				</StyledChevronButtons>
+				<h2>{currentDay.format('MMMM DD, YYYY')}</h2>
+				<StyledChevronButtons
+					onClick={() => {
+						const nextDay = moment(currentDay).add(1, 'days');
+						setCurrentDay(nextDay);
+					}}
+				>
+					›
+				</StyledChevronButtons>
+			</StyledHeaderContainer>
 			<StyledContainer>
-				<StyledHeaderContainer>
-					<StyledChevronButtons
-						onClick={() => {
-							const prevDay = moment(currentDay).subtract(1, 'days');
-							setCurrentDay(prevDay);
-						}}
-					>
-						‹
-					</StyledChevronButtons>
-					<h2>{currentDay.format('MMMM DD, YYYY')}</h2>
-					<StyledChevronButtons
-						onClick={() => {
-							const nextDay = moment(currentDay).add(1, 'days');
-							setCurrentDay(nextDay);
-						}}
-					>
-						›
-					</StyledChevronButtons>
-				</StyledHeaderContainer>
 				<div>
 					{hoursArray.map((hour) => {
 						const formattedStartTime = moment.utc().startOf('day').add(hour.startMinutes, 'minutes').format('HH:mm');
