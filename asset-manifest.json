@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/peek-timeslot-app/static/css/main.d33dd536.css",
-    "main.js": "/peek-timeslot-app/static/js/main.256e7afb.js",
+    "main.js": "/peek-timeslot-app/static/js/main.32f8addc.js",
     "static/js/787.6b57b5ee.chunk.js": "/peek-timeslot-app/static/js/787.6b57b5ee.chunk.js",
     "index.html": "/peek-timeslot-app/index.html",
     "main.d33dd536.css.map": "/peek-timeslot-app/static/css/main.d33dd536.css.map",
-    "main.256e7afb.js.map": "/peek-timeslot-app/static/js/main.256e7afb.js.map",
+    "main.32f8addc.js.map": "/peek-timeslot-app/static/js/main.32f8addc.js.map",
     "787.6b57b5ee.chunk.js.map": "/peek-timeslot-app/static/js/787.6b57b5ee.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.d33dd536.css",
-    "static/js/main.256e7afb.js"
+    "static/js/main.32f8addc.js"
   ]
 }
