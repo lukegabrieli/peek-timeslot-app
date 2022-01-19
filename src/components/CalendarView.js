@@ -2,9 +2,10 @@ import React, {useState} from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 import {useSelector, useDispatch} from 'react-redux';
+import TimeslotModal from './TimeslotModal';
 import {hoursArray} from '../constants/hours';
 import {cancelTimeslot} from '../redux/timeslot/timeslotSlice';
-import TimeslotModal from './TimeslotModal';
+import {createIndentsMap, filterAndSortTimeslots} from '../utils/utils';
 
 const StyledContainer = styled.div`
 	position: relative;
@@ -96,34 +97,10 @@ function CalendarView() {
 
 	// filter timeslots based on day
 	const formattedCurrentDay = currentDay.format('YYYY-MM-DD');
-	const filteredTimeslots = timeslots
-		.filter(({date}) => {
-			return date === formattedCurrentDay;
-		})
-		.sort((timeslot1, timeslot2) => timeslot1.startTime.localeCompare(timeslot2.startTime));
+	const filteredAndSortedTimeslots = filterAndSortTimeslots(timeslots, formattedCurrentDay);
 
 	// create indents for overlapping timeslots
-	const indentsMap = {};
-	let currentIndent = 0;
-	for (let x = 0; x < filteredTimeslots.length; x++) {
-		const currentTimeslot = filteredTimeslots[x];
-		const previousTimeslot = filteredTimeslots[x - 1];
-
-		if (previousTimeslot) {
-			const currentTimeslotStartTimeMoment = moment(`${currentTimeslot.date} ${currentTimeslot.startTime}`);
-			const previousTimeslotEndTimeMoment = moment(`${previousTimeslot.date} ${previousTimeslot.endTime}`);
-
-			if (currentTimeslotStartTimeMoment.isBefore(previousTimeslotEndTimeMoment)) {
-				currentIndent = currentIndent + 1;
-			} else {
-				currentIndent = 0;
-			}
-
-			indentsMap[currentTimeslot.id] = currentIndent;
-		} else {
-			indentsMap[currentTimeslot.id] = 0;
-		}
-	}
+	const indentsMap = createIndentsMap(filteredAndSortedTimeslots);
 
 	return (
 		<>
@@ -160,7 +137,7 @@ function CalendarView() {
 					})}
 				</div>
 				<StyledTimeslotContainer>
-					{filteredTimeslots.map((timeslot) => (
+					{filteredAndSortedTimeslots.map((timeslot) => (
 						<Timeslot key={timeslot.id} timeslot={timeslot} indent={indentsMap[timeslot.id]} />
 					))}
 				</StyledTimeslotContainer>
