@@ -23,7 +23,8 @@ You can view a working version of this challenge at [https://lukegabrieli.github
 
 1. Clone this repository
 2. `cd peek-timeslot-app`
-3. To start the local server: `npm start`
-4. To run prettier on all files: `npx prettier --write .`
-5. To deploy to GitHub Pages: `npm run build` and `npm run deploy`
-6. To run tests: `npm test`
+3. `npm install`
+4. To start the local server: `npm start`
+5. To run prettier on all files: `npx prettier --write .`
+6. To deploy to GitHub Pages: `npm run build` and `npm run deploy`
+7. To run tests: `npm test`
